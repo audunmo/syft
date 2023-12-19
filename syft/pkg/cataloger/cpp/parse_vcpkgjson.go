@@ -3,6 +3,7 @@ package cpp
 import (
 	"encoding/json"
 	"io"
+	"strings"
 
 	"github.com/anchore/syft/syft/artifact"
 	"github.com/anchore/syft/syft/file"
@@ -50,13 +51,21 @@ type vcpkgDependency struct {
 
 func (v *vcpkgDependency) UnmarshalJSON(b []byte) error {
 	// The structure of a dependency is either a string with the name of the dependency, or it's a json object with the name, and possibly the version
-	var s string
-	if err := json.Unmarshal(b, &s); err == nil {
-		v.Name = s
+
+	var dep struct {
+		Name       string `json:"name"`
+		MinVersion string `json:"version>="`
+	}
+
+	if err := json.Unmarshal(b, &dep); err == nil {
+		v.Name = dep.Name
+		v.MinVersion = dep.MinVersion
 		return nil
 	}
 
-	return json.Unmarshal(b, v)
+	// The raw string representation of the dependency is a quoted string, so we need to remove the quotes
+	v.Name = strings.ReplaceAll(string(b), `"`, ``)
+	return nil
 }
 
 func parseVcpkgJSON(_ file.Resolver, _ *generic.Environment, reader file.LocationReadCloser) ([]pkg.Package, []artifact.Relationship, error) {
