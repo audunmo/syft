@@ -20,10 +20,17 @@ type vcpkgJSON struct {
 
 // Confusinglu, vcpkg has twp different concepts, both called Features in their documentation:
 // 1) Features which contains data, and potentially dependencies, for features that are optionally enabled by the user when building the application.
-// 2) Features which only tell you if features (1) are enabled by default or not.
+//   - In vcppkg docs, this is same datastructure called a Feature Object
+//
+// 2) Features which only tell you if features (1) are enabled by default or not. In vcpkg docs this is called a Feature
 //
 // To clarify the distinction in this code, features (1) are called features, and features (2) are called defaultFeatureSettings
-type feature struct{}
+type feature struct {
+	Description  string            `json:"description"` // Description is the only required field in a feature
+	Dependencies []vcpkgDependency `json:"dependencies"`
+	Supports     []string          `json:"supports"`
+	License      *string           `json:"license"` // License is possibly null, so to use unmarshal, we need to use a pointer
+}
 
 type defaultFeatureSetting struct {
 	Name     string `json:"name"`
