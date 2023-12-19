@@ -9,6 +9,12 @@ import (
 )
 
 // NewConanCataloger returns a new C/C++ conanfile.txt and conan.lock cataloger object.
+func NewVcpkgCataloger() pkg.Cataloger {
+	return generic.NewCataloger("vcpkg-cataloger").
+		WithParserByGlobs(parseVcpkgJSON, "**/vcpkg.json")
+}
+
+// NewConanCataloger returns a new C++ conanfile.txt and conan.lock cataloger object.
 func NewConanCataloger() pkg.Cataloger {
 	return generic.NewCataloger("conan-cataloger").
 		WithParserByGlobs(parseConanfile, "**/conanfile.txt").
