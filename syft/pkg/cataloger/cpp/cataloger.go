@@ -11,7 +11,6 @@ import (
 // NewConanCataloger returns a new C/C++ conanfile.txt and conan.lock cataloger object.
 func NewConanCataloger() pkg.Cataloger {
 	return generic.NewCataloger("conan-cataloger").
-		WithParserByGlobs(parseConanfile, "**/conanfile.txt").
 		WithParserByGlobs(parseConanlock, "**/conan.lock")
 }
 
